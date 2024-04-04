@@ -6,11 +6,17 @@ class OUSTDatabase:
         self.DB_DIR = "src\server-2\database\oust_database.db"
         self.VALIDATION_ERROR = "ERROR: Cannot authenticate user. Student record not found in database."
 
-    # Create method to access database and collect student record
-    def getStudentRecord(self):
+    # Function Purpose: take a tuple in format (bool, string(student_id), string(fname), string(lname), string(email))
+    #                   and validates details against Student table in database. If it finds a record that
+    #                   matches all elements, queries StudentUnits table and return all rows that correspond
+    #                   to the student_id as a list. Return error message if user cannot be validated.
+    def getStudentRecords(self):
 
         # Variable to hold the user record (if found)
         user_record = ()
+
+        # List to collect StudentUnit records and return from function
+        student_unit_list = []
 
         # Establish connection to SQLite database and create cursor object to perform SQL operations
         conn = sqlite3.connect(self.DB_DIR)
@@ -49,17 +55,20 @@ class OUSTDatabase:
         query = 'SELECT * FROM StudentUnits WHERE student_id = ?'
         results = cur.execute(query, (student_id,)).fetchall()
 
-        for element in results:
-            print(element)
-
-
         # Close the connection
         conn.close()
+
+        for element in results:
+            student_unit_list.append(element)
+
+        return student_unit_list
+
 
 def main():
     test_tuple = (True, '90123456', 'Matthew', 'Rodriguez', 'matthew.rodriguez@example.com')
     oustRMI = OUSTDatabase(test_tuple)
-    oustRMI.getStudentRecord()
+    RMI_results = oustRMI.getStudentRecords()
+    print(RMI_results)
 
 if __name__ == "__main__":
     main()
