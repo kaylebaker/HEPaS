@@ -38,11 +38,15 @@ class Server1(object):
     def evaluateEligibility(self, user_details):
         # Store user details as object attribute
         self.user_details = user_details
-        self.person_id = self.user_details[2]
+
+        # Store student_id as variable for use in if-else flow
+        self.person_id = self.user_details[1]
 
         # Attempt to make remote call to server and save the returned value as object attribute
         try:
             server_response = self.server2.getStudentRecords(user_details)
+
+            # Firstly, checks if return value is string VALIDATION_ERROR from DB_Controller
             if type(server_response) == str:
                 return server_response
             else:
@@ -63,16 +67,17 @@ class Server1(object):
 
                     # Collect unit scores to calculate averages
                     unit_scores.append(record[2])
-
-                self.course_avg = sum(unit_scores) / len(unit_scores)
+                
+                # Calculate averages and store in class attributes
+                self.course_avg = round(sum(unit_scores) / len(unit_scores), 2)
                 unit_scores.sort(reverse = True)
-                self.topEight_avg = sum(unit_scores[:8]) / 8
+                self.topEight_avg = round(sum(unit_scores[:8]) / 8, 2)
                 self.numUnitsCompleted = len(units)
 
         except Exception as e:
             logging.exception("Error in evaluateEligibility: %s", str(e))
 
-
+        # Evaluate honours criteria and return string for client
         if self.numUnitsCompleted < 16:
             return f"{self.person_id}, {self.course_avg}, completed less than 16 units!\nDOES NOT QUALIFY FOR HONOURS STUDY!"
         elif self.numOfFails >= 6:

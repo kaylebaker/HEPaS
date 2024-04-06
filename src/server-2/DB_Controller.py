@@ -42,15 +42,13 @@ class Server2(object):
             
             # Create tuple to compare to SQL query rows
             validator = (user_details[1], user_details[2], user_details[3], user_details[4])
-            print(f"Validator tuple = {validator}")
 
         # Validate user against Students table in database
         print("\nComparing fields to rows in oust_database::Table::Students...")
         match_found = False
         while (not match_found):
             for row in cur.execute('SELECT student_id, fname, lname, email FROM Students'):
-                print(row)
-                if row[0] == validator:
+                if row == validator:
                     print("\nUser authenticated. Match found in oust_database::Table::Students.")
                     print(row)
                     print("\n")
