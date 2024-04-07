@@ -69,6 +69,14 @@ while(authorised == True):
         print()
         print(df.to_string(index=False))
 
+    elif selection == '3':
+        # INSERT INTO table_name VALUES (value1, value2, value3, ...)
+        pass
+
+    elif selection == '4':
+        # DELETE FROM table_name WHERE condition
+        pass
+
     elif selection == '5':
         print("Goodbye")
         input()

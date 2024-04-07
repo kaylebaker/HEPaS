@@ -114,16 +114,16 @@ class Server2(object):
 
     @Pyro4.expose
     def addRecord(self, table_name, record):
+        # INSERT INTO table_name VALUES (value1, value2, value3, ...)
 
         # Establish connection to SQLite database and create cursor object to perform SQL operations
         conn = sqlite3.connect(self.DB_DIR)
         cur = conn.cursor()
 
         try:
-
-            cur.execute(f'INSERT INTO {table_name} {record}')
+            cur.execute(f'INSERT INTO {table_name} VALUES {record}')
             if cur.rowcount == 1:
-                print("Record added successfully.")
+                return "Record added successfully."
             else:
                 print("No record was inserted.")
 
@@ -139,6 +139,7 @@ class Server2(object):
 
     @Pyro4.expose
     def deleteRecord(self, table_name, identifier):
+        # DELETE FROM table_name WHERE condition
 
         # Establish connection to SQLite database and create cursor object to perform SQL operations
         conn = sqlite3.connect(self.DB_DIR)
