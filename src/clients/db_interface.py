@@ -5,20 +5,18 @@ import os
 
 load_dotenv()
 
-DB_DIR = "src\server-2\oust_database.db"
-TABLES = ["Courses", "Students", "StudentUnits"]
 USER = os.getenv('DB_USERNAME')
 PASS = os.getenv('DB_PASSWORD')
 
 try:
     # Look up server-2 in the name server
-    print("Looking up server-2 in Pyro name server...")
+    print("Looking up server-1 in Pyro name server...")
     nameserver = Pyro4.locateNS()
-    uri = nameserver.lookup("server-2")
+    uri = nameserver.lookup("server-1")
 
     # Create a Proxy for server-2
-    server2 = Pyro4.Proxy(uri)
-    print("Server located! Now connected to server-2.")
+    server1 = Pyro4.Proxy(uri)
+    print("Server located! Now connected to server-1.")
 
 except Exception as e:
     print("Unable to connect to remote server", e)
@@ -56,18 +54,18 @@ while(authorised == True):
     selection = input()
 
     if selection == '1':
-        for table in TABLES:
-            table_info = server2.displayDBSchema(table)
-            print(f"\nSchema details for table {table}:")
-            print(f"--------------------------------------")
-            for column in table_info:
-                print(column)
+        data = server1.displayDBSchema()
+
+        for key in data:
+            print(f"\nSchema for table: {key}")
+            print("------------------------------------")
+            for line in data.get(key):
+                print(line)
+
 
     elif selection == '2':
-        data = server2.displayStudentRecords()
-        df = pd.DataFrame(data, columns = ['student_id', 'fname', 'lname', 'email', 'mobile', 'course_code', 'units_attempted', 'units_completed', 'course_status'])
-        print()
-        print(df.to_string(index=False))
+        data = server1.displayStudentRecords()
+
 
     elif selection == '3':
         # INSERT INTO table_name VALUES (value1, value2, value3, ...)

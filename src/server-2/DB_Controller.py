@@ -13,8 +13,22 @@ logging.basicConfig(level=logging.DEBUG)
 @Pyro4.behavior(instance_mode="single")
 class Server2(object):
     # Set constants
-    DB_DIR = ".\oust_database.db"
+    DB_DIR = "src\server-2\oust_database.db"
     VALIDATION_ERROR = "ERROR: Cannot authenticate user. Student record not found in database."
+    TABLE_NAMES = []
+
+    def __init__(self):
+
+        # Establish connection to SQLite database and create cursor object to perform SQL operations
+        conn = sqlite3.connect(self.DB_DIR)
+        cur = conn.cursor()
+
+        # Collect table names into a list
+        for element in cur.execute("SELECT name FROM sqlite_schema WHERE type='table' AND name NOT LIKE 'sqlite_%'").fetchall():
+            self.TABLE_NAMES.append(element[0])
+
+        # Close connection to SQL database
+        cur.close()
 
 
     # Function Purpose: 
@@ -77,25 +91,32 @@ class Server2(object):
     # ---------------------------------------------
 
     @Pyro4.expose
-    def displayDBSchema(self, table_name):
+    def getDBSchema(self):
 
         # Establish connection to SQLite database and create cursor object to perform SQL operations
         conn = sqlite3.connect(self.DB_DIR)
         cur = conn.cursor()
 
-        table_info = []
-        schema_info = cur.execute(f"PRAGMA table_info({table_name})").fetchall()
-        for column in schema_info:
-            table_info.append(f"Column: {column[1]}, Type: {column[2]}, Nullable: {column[3]}, Default: {column[4]}")
+        table_schemas = {}
+
+        # Iterate through table names and collect schema of each table and store in dict
+        for table in self.TABLE_NAMES:
+            schema_info = cur.execute(f"PRAGMA table_info({table})").fetchall()
+            table_columns = []
+            
+            for column in schema_info:
+                    table_columns.append(f"Column: {column[1]}, Type: {column[2]}, Nullable: {column[3]}, Default: {column[4]}")
+            
+            table_schemas[table] = table_columns
 
         # Close connection to SQL database
         cur.close()
 
-        return table_info
+        return table_schemas
 
 
     @Pyro4.expose
-    def displayStudentRecords(self):
+    def getStudentRecords(self):
 
         # Establish connection to SQLite database and create cursor object to perform SQL operations
         conn = sqlite3.connect(self.DB_DIR)
