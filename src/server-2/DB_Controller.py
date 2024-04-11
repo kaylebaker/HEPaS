@@ -13,14 +13,19 @@ logging.basicConfig(level=logging.DEBUG)
 @Pyro4.behavior(instance_mode="single")
 class Server2(object):
     # Set constants
-    DB_DIR = "src\server-2\oust_database.db"
+    DB_DIR = "C:\\Users\\krbak\OneDrive\\Uni\\Year 3 Semester 1\\CSI3344 Distributed Systems\\Assignment 3\\Code\\HEPaS\\src\\server-2\\oust_database.db"
     VALIDATION_ERROR = "ERROR: Cannot authenticate user. Student record not found in database."
     TABLE_NAMES = []
 
     def __init__(self):
 
         # Establish connection to SQLite database and create cursor object to perform SQL operations
-        conn = sqlite3.connect(self.DB_DIR)
+        try:
+            conn = sqlite3.connect(self.DB_DIR)
+        except Exception as e:
+            logging.exception("Failed to connect to database: %s", str(e))
+            raise
+        
         cur = conn.cursor()
 
         # Collect table names into a list
@@ -43,7 +48,7 @@ class Server2(object):
 
         # Establish connection to SQLite database and create cursor object to perform SQL operations
         conn = sqlite3.connect(self.DB_DIR)
-        cur = conn.cursor()
+        self.cur = conn.cursor()
 
         # List to collect StudentUnit records and return from function
         student_unit_list = []
@@ -61,7 +66,7 @@ class Server2(object):
         print("\nComparing fields to rows in oust_database::Table::Students...")
         match_found = False
         while (not match_found):
-            for row in cur.execute('SELECT student_id, fname, lname, email FROM Students'):
+            for row in self.cur.execute('SELECT student_id, fname, lname, email FROM Students'):
                 if row == validator:
                     print("\nUser authenticated. Match found in oust_database::Table::Students.")
                     print(row)
@@ -81,7 +86,7 @@ class Server2(object):
             student_unit_list.append(element)
 
         # Close connection to SQL database
-        cur.close()
+        self.cur.close()
 
         return student_unit_list
 
@@ -90,7 +95,7 @@ class Server2(object):
     # FUNCTIONS BELOW ARE CALLED BY db_interface.py
     # ---------------------------------------------
 
-    @Pyro4.expose
+    """ @Pyro4.expose
     def getDBSchema(self):
 
         # Establish connection to SQLite database and create cursor object to perform SQL operations
@@ -116,7 +121,7 @@ class Server2(object):
 
 
     @Pyro4.expose
-    def getStudentRecords(self):
+    def getStudentDetails(self):
 
         # Establish connection to SQLite database and create cursor object to perform SQL operations
         conn = sqlite3.connect(self.DB_DIR)
@@ -189,7 +194,7 @@ class Server2(object):
             print("ERROR: Unable to delete record.", e)
 
             # Close connection to SQL database
-            cur.close()
+            cur.close() """
 
 
 

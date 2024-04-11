@@ -3,7 +3,6 @@
 
 import Pyro4
 import logging
-import json
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
