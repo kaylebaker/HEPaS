@@ -10,13 +10,13 @@ PASS = os.getenv('DB_PASSWORD')
 
 try:
     # Look up server-2 in the name server
-    print("Looking up server-1 in Pyro name server...")
+    print("Looking up server-2 in Pyro name server...")
     nameserver = Pyro4.locateNS()
-    uri = nameserver.lookup("server-1")
+    uri = nameserver.lookup("server-2")
 
     # Create a Proxy for server-2
-    server1 = Pyro4.Proxy(uri)
-    print("Server located! Now connected to server-1.")
+    server2 = Pyro4.Proxy(uri)
+    print("Server located! Now connected to server-2.")
 
 except Exception as e:
     print("Unable to connect to remote server", e)
@@ -54,7 +54,7 @@ while(authorised == True):
     selection = input()
 
     if selection == '1':
-        data = server1.displayDBSchema()
+        data = server2.getDBSchema()
 
         for key in data:
             print(f"\nSchema for table: {key}")
@@ -64,7 +64,14 @@ while(authorised == True):
 
 
     elif selection == '2':
-        data = server1.displayStudentRecords()
+        data = server2.displayStudentRecords()
+        headings = ["StudentID", "First Name", "Surname", "Email", "Mobile", "Course Code", "Units Attempted", "Units Completed", "Course Status"]
+        df = pd.DataFrame(data, columns=headings)
+        with pd.option_context(
+            'display.max_rows', None,
+            'display.max_columns', None,
+        ):
+            print(df)
 
 
     elif selection == '3':

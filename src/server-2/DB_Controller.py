@@ -95,7 +95,7 @@ class Server2(object):
     # FUNCTIONS BELOW ARE CALLED BY db_interface.py
     # ---------------------------------------------
 
-    """ @Pyro4.expose
+    @Pyro4.expose
     def getDBSchema(self):
 
         # Establish connection to SQLite database and create cursor object to perform SQL operations
@@ -121,7 +121,7 @@ class Server2(object):
 
 
     @Pyro4.expose
-    def getStudentDetails(self):
+    def displayStudentRecords(self):
 
         # Establish connection to SQLite database and create cursor object to perform SQL operations
         conn = sqlite3.connect(self.DB_DIR)
@@ -136,67 +136,6 @@ class Server2(object):
         cur.close()
 
         return data
-
-
-    @Pyro4.expose
-    def addRecord(self, table_name, record):
-        # INSERT INTO table_name VALUES (value1, value2, value3, ...)
-
-        # Establish connection to SQLite database and create cursor object to perform SQL operations
-        conn = sqlite3.connect(self.DB_DIR)
-        cur = conn.cursor()
-
-        try:
-            cur.execute(f'INSERT INTO {table_name} VALUES {record}')
-            if cur.rowcount == 1:
-                return "Record added successfully."
-            else:
-                print("No record was inserted.")
-
-            # Close connection to SQL database
-            cur.close()
-
-        except Exception as e:
-            print("ERROR: Unable to insert new record.", e)
-
-            # Close connection to SQL database
-            cur.close()
-
-
-    @Pyro4.expose
-    def deleteRecord(self, table_name, identifier):
-        # DELETE FROM table_name WHERE condition
-
-        # Establish connection to SQLite database and create cursor object to perform SQL operations
-        conn = sqlite3.connect(self.DB_DIR)
-        cur = conn.cursor()
-
-        field = ""
-        if table_name == 'Courses':
-            field = 'course_code'
-        elif table_name == 'Students':
-            field = 'student_id'
-        else:
-            print("ERROR")
-            return
-        
-        try:
-            cur.execute(f'DELETE FROM {table_name} WHERE {field}={identifier}')
-            if cur.rowcount == 1:
-                print("Record deleted successfully.")
-            else:
-                print("No record was deleted.")
-
-            # Close connection to SQL database
-            cur.close()
-
-        except Exception as e:
-            print("ERROR: Unable to delete record.", e)
-
-            # Close connection to SQL database
-            cur.close() """
-
-
 
 def main():
     Pyro4.Daemon.serveSimple(

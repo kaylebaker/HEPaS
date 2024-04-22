@@ -94,32 +94,6 @@ class Server1(object):
             return f"{self.person_id}, {self.course_avg}, DOES NOT QUALIFY FOR HONOURS STUDY!"
 
 
-    # -------------------------------------------------------------------
-    # FUNCTIONS BELOW ARE CALLED BY server-1 ON BEHALF OF db_interface.py
-    # -------------------------------------------------------------------
-
-    @Pyro4.expose
-    def displayDBSchema(self):
-        return self.server2.getDBSchema()
-        
-
-
-    @Pyro4.expose
-    def displayStudentRecords(self):
-        pass
-
-
-    @Pyro4.expose
-    def addRecord(self, table_name, record):
-        pass
-
-
-    @Pyro4.expose
-    def deleteRecord(self, table_name, identifier):
-        pass
-
-
-
 def main():
     Pyro4.Daemon.serveSimple(
         {
