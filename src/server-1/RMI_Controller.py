@@ -7,8 +7,11 @@ import logging
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
 
-# Example of user_details
+# Example of exisiting user_details
 # (True, '90123456', 'Matthew', 'Rodriguez', 'matthew.rodriguez@example.com')
+
+# Example of non-student user_details
+# ()
 
 # Example return of server2.getStudentRecords()
 # [('90123456', 'MTH0101', 85, 'HD'), ('90123456', 'MTH0102', 78, 'D')]

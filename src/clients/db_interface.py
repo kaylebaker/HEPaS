@@ -67,11 +67,11 @@ while(authorised == True):
         data = server2.displayStudentRecords()
         headings = ["StudentID", "First Name", "Surname", "Email", "Mobile", "Course Code", "Units Attempted", "Units Completed", "Course Status"]
         df = pd.DataFrame(data, columns=headings)
-        with pd.option_context(
+        """ with pd.option_context(
             'display.max_rows', None,
             'display.max_columns', None,
-        ):
-            print(df)
+        ): """
+        print(df)
 
 
     elif selection == '3':
