@@ -10,9 +10,6 @@ logging.basicConfig(level=logging.DEBUG)
 # Example of exisiting user_details
 # (True, '90123456', 'Matthew', 'Rodriguez', 'matthew.rodriguez@example.com')
 
-# Example of non-student user_details
-# ()
-
 # Example return of server2.getStudentRecords()
 # [('90123456', 'MTH0101', 85, 'HD'), ('90123456', 'MTH0102', 78, 'D')]
 
@@ -20,6 +17,7 @@ logging.basicConfig(level=logging.DEBUG)
 class Server1(object):
     user_details = ()
     user_records = []
+    user_scores = {}
     numUnitsCompleted = 0
     numOfFails = 0
     course_avg = 0.0
@@ -42,43 +40,69 @@ class Server1(object):
         # Store user details as object attribute
         self.user_details = user_details
 
-        # Store student_id as variable for use in if-else flow
-        self.person_id = self.user_details[1]
+        # Check first value of user_detail and if True, then it is expected to be a current student
+        if user_details[0] == True:
 
-        # Attempt to make remote call to server and save the returned value as object attribute
-        try:
-            server_response = self.server2.getStudentRecords(user_details)
+            # Store student_id as variable for use in if-else flow
+            self.person_id = self.user_details[1]
 
-            # Firstly, checks if return value is string VALIDATION_ERROR from DB_Controller
-            if type(server_response) == str:
-                return server_response
-            else:
-                self.user_records = server_response
+            # Attempt to make remote call to server and save the returned value as object attribute
+            try:
+                server_response = self.server2.getStudentRecords(user_details)
 
-                # Loop through user_records and collect required data
-                units = []
+                # Firstly, checks if return value is string VALIDATION_ERROR from DB_Controller
+                if type(server_response) == str:
+                    return server_response
+                else:
+                    self.user_records = server_response
+
+                    # Loop through user_records and collect required data
+                    units = []
+                    unit_scores = []
+
+                    for record in self.user_records:
+                        # Collect unique units
+                        if record[1] not in units:
+                            units.append(record[1])
+
+                        # Collect number of Fails
+                        if record[3] == 'F':
+                            self.numOfFails += 1
+
+                        # Collect unit scores to calculate averages
+                        unit_scores.append(record[2])
+                    
+                    # Calculate averages and store in class attributes
+                    self.course_avg = round(sum(unit_scores) / len(unit_scores), 2)
+                    unit_scores.sort(reverse = True)
+                    self.topEight_avg = round(sum(unit_scores[:8]) / 8, 2)
+                    self.numUnitsCompleted = len(units)
+
+            except Exception as e:
+                logging.exception("Error in evaluateEligibility: %s", str(e))
+        
+        # Example of non-student user_details
+        # (user_id, {<course_code> : [result1, result2, ...], ...})
+        else:
+            try:
+                self.person_id = user_details[0]
+                self.user_scores = user_details[1]
+                self.numUnitsCompleted = len(self.user_scores)
+
                 unit_scores = []
-
-                for record in self.user_records:
-                    # Collect unique units
-                    if record[1] not in units:
-                        units.append(record[1])
-
-                    # Collect number of Fails
-                    if record[3] == 'F':
-                        self.numOfFails += 1
-
-                    # Collect unit scores to calculate averages
-                    unit_scores.append(record[2])
-                
+                for key, value in self.user_scores.items():
+                    for grade in value:
+                        unit_scores.append(grade)
+                        if grade < 50:
+                            self.numOfFails += 1
                 # Calculate averages and store in class attributes
                 self.course_avg = round(sum(unit_scores) / len(unit_scores), 2)
                 unit_scores.sort(reverse = True)
                 self.topEight_avg = round(sum(unit_scores[:8]) / 8, 2)
-                self.numUnitsCompleted = len(units)
 
-        except Exception as e:
-            logging.exception("Error in evaluateEligibility: %s", str(e))
+            except Exception as e:
+                logging.exception("Error in evaluateEligibility: %s", str(e))
+        
 
         # Evaluate honours criteria and return string for client
         if self.numUnitsCompleted < 16:
