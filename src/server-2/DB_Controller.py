@@ -6,6 +6,7 @@
 import sqlite3
 import Pyro4
 import logging
+import time
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
@@ -15,26 +16,6 @@ class Server2(object):
     # Set constants
     DB_DIR = "C:\\Users\\krbak\OneDrive\\Uni\\Year 3 Semester 1\\CSI3344 Distributed Systems\\Assignment 3\\Code\\HEPaS\\src\\server-2\\oust_database.db"
     VALIDATION_ERROR = "VALIDATION ERROR: Cannot authenticate user. Student record not found in database."
-    TABLE_NAMES = []
-
-    def __init__(self):
-
-        # Establish connection to SQLite database and create cursor object to perform SQL operations
-        try:
-            conn = sqlite3.connect(self.DB_DIR)
-        except Exception as e:
-            logging.exception("Failed to connect to database: %s", str(e))
-            raise
-        
-        cur = conn.cursor()
-
-        # Collect table names into a list
-        for element in cur.execute("SELECT name FROM sqlite_schema WHERE type='table' AND name NOT LIKE 'sqlite_%'").fetchall():
-            self.TABLE_NAMES.append(element[0])
-
-        # Close connection to SQL database
-        cur.close()
-
 
     # Function Purpose: 
     # take a tuple in format (bool, string(student_id), string(fname), string(lname), string(email))
@@ -47,17 +28,24 @@ class Server2(object):
     def getStudentRecords(self, student_id):
 
         # Establish connection to SQLite database and create cursor object to perform SQL operations
+        print("getStudentRecords method called by server-1.")
+        server_timer_start = time.time()
+        print(f"Attempting to connect to SQLite database...\n")
+
         conn = sqlite3.connect(self.DB_DIR)
         self.cur = conn.cursor()
+
+        server_timer_end = time.time()
+        print(f"Connected to database. Time elapsed {server_timer_end - server_timer_start} seconds\n")
 
         # List to collect StudentUnit records and return from function
         student_unit_list = []
 
-        # Validate user against Students table in database
+        # Validate and collect student records based on student id
         print("\nComparing fields to rows in oust_database::Table::Students...")
         match_found = False
         while (not match_found):
-            for row in self.cur.execute('SELECT student_id FROM Students'):
+            for row in self.cur.execute('SELECT student_id, fname, lname, email FROM Students'):
                 if row[0] == student_id:
                     print("\nUser authenticated. Match found in oust_database::Table::Students.")
                     print(row)
@@ -74,11 +62,14 @@ class Server2(object):
         query = 'SELECT student_id, unit_code, unit_score, unit_grade FROM StudentUnits WHERE student_id = ?'
         results = self.cur.execute(query, (student_id,)).fetchall()
 
+        print("Collecting student records from oust_database::Table::StudentUnits.")
         for element in results:
             student_unit_list.append(element)
 
         # Close connection to SQL database
         self.cur.close()
+        print("Connection to database closed.")
+        print("Returning list of StudentUnit records to server-1")
 
         return student_unit_list
 
