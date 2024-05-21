@@ -8,6 +8,12 @@ import time
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
 
+# Daemon([host=None, port=0, unixsocket=None, nathost=None, natport=None, interface=DaemonObject, connected_socket=None])
+host_ip = None
+port = 0
+nat_host = None
+nat_port = 0
+
 # Example of existing user_details
 # (True, '90123456', 'Matthew', 'Rodriguez', 'matthew.rodriguez@example.com')
 
@@ -150,12 +156,11 @@ class Server1(object):
 
 
 def main():
-    Pyro4.Daemon.serveSimple(
-        {
-            Server1: "server-1"
-        },
-        ns = True
-    )
+    s1_daemon = Pyro4.Daemon(host=host_ip)
+    ns = Pyro4.locateNS()
+    uri = s1_daemon.register(Server1)
+    ns.register("server-1", uri)
+    s1_daemon.requestLoop()
 
 if __name__ == "__main__":
     main()

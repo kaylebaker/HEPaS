@@ -11,6 +11,12 @@ import time
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
 
+# Daemon([host=None, port=0, unixsocket=None, nathost=None, natport=None, interface=DaemonObject, connected_socket=None])
+host_ip = None
+port = 0
+nat_host = None
+nat_port = 0
+
 @Pyro4.behavior(instance_mode="single")
 class Server2(object):
     # Set constants
@@ -120,12 +126,11 @@ class Server2(object):
         return data
 
 def main():
-    Pyro4.Daemon.serveSimple(
-        {
-            Server2: "server-2"
-        },
-        ns = True
-    )
+    s2_daemon = Pyro4.Daemon(host=host_ip)
+    ns = Pyro4.locateNS()
+    uri = s2_daemon.register(Server2)
+    ns.register("server-2", uri)
+    s2_daemon.requestLoop()
 
 if __name__ == "__main__":
     main()
