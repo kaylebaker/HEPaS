@@ -8,12 +8,6 @@ import time
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
 
-# Daemon([host=None, port=0, unixsocket=None, nathost=None, natport=None, interface=DaemonObject, connected_socket=None])
-host_ip = None
-port = 0
-nat_host = None
-nat_port = 0
-
 # Example of existing user_details
 # (True, '90123456', 'Matthew', 'Rodriguez', 'matthew.rodriguez@example.com')
 
@@ -77,7 +71,7 @@ class Server1(object):
     def evaluateEligibility(self, user_details):
         print("evaluateEligibility method called by client.")
 
-        self.person_id = self.user_details[0]
+        self.person_id = user_details[0]
 
         print("Checking for validated user records...")
         if self.user_records[0][0] == self.person_id:
@@ -155,9 +149,13 @@ class Server1(object):
             return f"{self.person_id}, {self.course_avg}, DOES NOT QUALIFY FOR HONOURS STUDY!"
 
 
+# Daemon([host=None, port=0, unixsocket=None, nathost=None, natport=None, interface=DaemonObject, connected_socket=None])
+host_ip = "192.168.1.111"
+port = 9090
+
 def main():
     s1_daemon = Pyro4.Daemon(host=host_ip)
-    ns = Pyro4.locateNS()
+    ns = Pyro4.locateNS(host=host_ip)
     uri = s1_daemon.register(Server1)
     ns.register("server-1", uri)
     s1_daemon.requestLoop()

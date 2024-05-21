@@ -11,16 +11,10 @@ import time
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
 
-# Daemon([host=None, port=0, unixsocket=None, nathost=None, natport=None, interface=DaemonObject, connected_socket=None])
-host_ip = None
-port = 0
-nat_host = None
-nat_port = 0
-
 @Pyro4.behavior(instance_mode="single")
 class Server2(object):
     # Set constants
-    DB_DIR = "C:\\Users\\krbak\OneDrive\\Uni\\Year 3 Semester 1\\CSI3344 Distributed Systems\\Assignment 3\\Code\\HEPaS\\src\\server-2\\oust_database.db"
+    DB_DIR = "C:\\Users\\krbak\\OneDrive\\Uni\\Year 3 Semester 1\\CSI3344 Distributed Systems\\Assignment 3\\Code\\HEPaS\\src\\server-2\\oust_database.db"
     VALIDATION_ERROR = "VALIDATION ERROR: Cannot authenticate user. Student record not found in database."
 
     # Function Purpose: 
@@ -124,10 +118,14 @@ class Server2(object):
         cur.close()
 
         return data
+    
+# Daemon([host=None, port=0, unixsocket=None, nathost=None, natport=None, interface=DaemonObject, connected_socket=None])
+host_ip = "192.168.1.111"
+port = 9090
 
 def main():
     s2_daemon = Pyro4.Daemon(host=host_ip)
-    ns = Pyro4.locateNS()
+    ns = Pyro4.locateNS(host_ip)
     uri = s2_daemon.register(Server2)
     ns.register("server-2", uri)
     s2_daemon.requestLoop()

@@ -148,7 +148,7 @@ def guest():
 
 server_timer_start = time.time()
 # # Look up server-1 in the name server
-nameserver = Pyro4.locateNS()
+nameserver = Pyro4.locateNS(host="192.168.1.111")
 uri = nameserver.lookup("server-1")
 
 # # Create a Proxy for server-2
