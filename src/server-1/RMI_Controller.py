@@ -71,7 +71,7 @@ class Server1(object):
     def evaluateEligibility(self, user_details):
         print("evaluateEligibility method called by client.")
 
-        self.person_id = self.user_details[0]
+        self.person_id = user_details[0]
 
         print("Checking for validated user records...")
         if self.user_records[0][0] == self.person_id:
