@@ -7,7 +7,7 @@ import logging
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
 
-# Example of exisiting user_details
+# Example of existing user_details
 # (True, '90123456', 'Matthew', 'Rodriguez', 'matthew.rodriguez@example.com')
 
 # Example return of server2.getStudentRecords()
@@ -33,6 +33,23 @@ class Server1(object):
 
         # Create a Proxy for server-2
         self.server2 = Pyro4.Proxy(uri)
+    
+    @Pyro4.expose
+    def validateUser(self, student_id):
+        # Attempt to make remote call to server and save the returned value as object attribute
+        try:
+            server_response = self.server2.getStudentRecords(student_id)
+
+            # Firstly, checks if return value is string VALIDATION_ERROR from DB_Controller
+            if type(server_response) == str:
+                return server_response
+            else:
+                self.user_records = server_response
+                validator_record = self.user_records[0] # (student_id, fname, lname, email, mobile, course_code, units_attempted, units_completed, course_status)
+                return (validator_record[0], validator_record[1], validator_record[2], validator_record[3])
+
+        except Exception as e:
+            logging.exception("Error in validateUser: %s", str(e))
 
  
     @Pyro4.expose
@@ -48,7 +65,7 @@ class Server1(object):
 
             # Attempt to make remote call to server and save the returned value as object attribute
             try:
-                server_response = self.server2.getStudentRecords(user_details)
+                server_response = self.server2.getStudentRecords(self.person_id)
 
                 # Firstly, checks if return value is string VALIDATION_ERROR from DB_Controller
                 if type(server_response) == str:

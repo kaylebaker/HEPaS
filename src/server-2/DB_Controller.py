@@ -14,7 +14,7 @@ logging.basicConfig(level=logging.DEBUG)
 class Server2(object):
     # Set constants
     DB_DIR = "C:\\Users\\krbak\OneDrive\\Uni\\Year 3 Semester 1\\CSI3344 Distributed Systems\\Assignment 3\\Code\\HEPaS\\src\\server-2\\oust_database.db"
-    VALIDATION_ERROR = "ERROR: Cannot authenticate user. Student record not found in database."
+    VALIDATION_ERROR = "VALIDATION ERROR: Cannot authenticate user. Student record not found in database."
     TABLE_NAMES = []
 
     def __init__(self):
@@ -44,7 +44,7 @@ class Server2(object):
         # ('90123456', 'MTH0101', 85, 'HD')
     # Return error message if user cannot be validated.
     @Pyro4.expose
-    def getStudentRecords(self, user_details):
+    def getStudentRecords(self, student_id):
 
         # Establish connection to SQLite database and create cursor object to perform SQL operations
         conn = sqlite3.connect(self.DB_DIR)
@@ -53,24 +53,16 @@ class Server2(object):
         # List to collect StudentUnit records and return from function
         student_unit_list = []
 
-        # Check boolean value at user_details[0] to confirm if current/former student
-        # Example of user_details
-        # (True, '90123456', 'Matthew', 'Rodriguez', 'matthew.rodriguez@example.com')
-        if user_details[0] == True:
-            print("First element of input tuple is 'True'. Validating user in oust_database::Table::Students.")
-            
-            # Create tuple to compare to SQL query rows
-            validator = (user_details[1], user_details[2], user_details[3], user_details[4])
-
         # Validate user against Students table in database
         print("\nComparing fields to rows in oust_database::Table::Students...")
         match_found = False
         while (not match_found):
-            for row in self.cur.execute('SELECT student_id, fname, lname, email FROM Students'):
-                if row == validator:
+            for row in self.cur.execute('SELECT student_id FROM Students'):
+                if row[0] == student_id:
                     print("\nUser authenticated. Match found in oust_database::Table::Students.")
                     print(row)
                     print("\n")
+                    student_unit_list.append(row)
                     match_found = True
             break
 
@@ -80,7 +72,7 @@ class Server2(object):
 
         # Use the user record to fetch all rows from table StudentUnits corresponding to that user
         query = 'SELECT student_id, unit_code, unit_score, unit_grade FROM StudentUnits WHERE student_id = ?'
-        results = self.cur.execute(query, (user_details[1],)).fetchall()
+        results = self.cur.execute(query, (student_id,)).fetchall()
 
         for element in results:
             student_unit_list.append(element)
@@ -89,7 +81,6 @@ class Server2(object):
         self.cur.close()
 
         return student_unit_list
-
 
     # ---------------------------------------------
     # FUNCTIONS BELOW ARE CALLED BY db_interface.py
