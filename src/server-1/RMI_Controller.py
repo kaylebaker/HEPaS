@@ -16,7 +16,6 @@ logging.basicConfig(level=logging.DEBUG)
 
 @Pyro4.behavior(instance_mode="single")
 class Server1(object):
-    user_details = ()
     user_records = []
     user_scores = {}
     numUnitsCompleted = 0
@@ -71,8 +70,7 @@ class Server1(object):
     @Pyro4.expose
     def evaluateEligibility(self, user_details):
         print("evaluateEligibility method called by client.")
-        # Store user details as object attribute
-        self.user_details = user_details
+
         self.person_id = self.user_details[0]
 
         print("Checking for validated user records...")

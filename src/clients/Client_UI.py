@@ -10,11 +10,8 @@
 #make cli look good
 
 
-
-from __future__ import print_function
 import Pyro4
 import time
-import sys
 import re
 
 def student():
@@ -84,7 +81,6 @@ def student():
 
 def guest():
     gd = []
-    gd.append(False)
     SID = (str(input("Please enter a personal identifier: \n")))
     guest_mark = {}
     mark_quantity = 0
