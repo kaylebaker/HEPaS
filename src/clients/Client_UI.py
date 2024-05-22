@@ -2,17 +2,10 @@
 # ('89140352', 'John', 'Doe', 'john.doe@gmail.com', '0412345678', 'B65', 4, 4, 'Active'),
 # ('20785631', 'Jane', 'Smith', 'jane.smith@yahoo.com', '0423456789', 'M75', 3, 2, 'Inactive')
 
-
-#clean up docs/ cli
-#how to set IP addresses/ set up on different/ multiple pcs
-#--------- possible automate script?
-#logs for backend
-#make cli look good
-
-
 import Pyro4
 import time
 import re
+
 
 def student():
     ud = []
@@ -58,7 +51,7 @@ def student():
     
     while True:
         email = str(input("Please enter email: "))
-        if (email.count("@") != 1 or email.count(".com") != 1):           ##be more specific to prevent "@nope" as an email
+        if (email.count("@") != 1 or email.count(".com") != 1):           
             print("\nInvalid email address.\n")
         elif( email.find("@") > email.find(".com")):
               print("\nInvalid email address.\n")
@@ -86,17 +79,18 @@ def guest():
     mark_quantity = 0
     valid_entry = True
     while valid_entry:      
-        unit_code_mark = str(input("\nPlease enter the unit code and mark, seperated by a space. ('wut1337 82') \nType 'stop' when finished. \n\n")) #3letter 4 number
-        
-        if (unit_code_mark == "stop" or mark_quantity ==30):
+        unit_code_mark = str(input("\nPlease enter the unit code and mark, seperated by a space. ('wut1337 82') \nType 'done' to check eligibility, or 'exit' to exit. \n\n")) #3letter 4 number
+        if(unit_code_mark == 'exit'):
+            exit()           
+        if (unit_code_mark == "done" or mark_quantity ==30):
             if mark_quantity <16:
-                print("insufficient number of units.\nPlease enter more.")
+                print("insufficient number of units.\n")
                 continue
             if mark_quantity ==30:
                 print("Maximum number of entries reached.")
             gd.append(SID)
             gd.append(guest_mark)
-            print("\nCalculating eligibility for",gd[1],"...\n")
+            print("\nCalculating eligibility for",gd[0],"...\n")
             return(gd)
             break
         if (len(unit_code_mark.split()) == 2):
@@ -106,7 +100,7 @@ def guest():
             except ValueError:
                 print("\nInvalid format.\n")
                 continue
-            if (re.match(r"^[A-Za-z]{3,4}\d{3,5}$", unit_code) and 0 <= float(unit_mark) and float(unit_mark) <= 100 ):
+            if (re.match(r"^[A-Za-z]{3,4}\d{3,4}$", unit_code) and 0 <= float(unit_mark) and float(unit_mark) <= 100 ):
                 print(f"\n-----------------------------------------------\n{SID}'s marks:")
                 if unit_code not in guest_mark:
                     guest_mark[unit_code] = [unit_mark]
@@ -142,10 +136,13 @@ def guest():
                                 valid_entry = False
                                 break
 
-                            
+            elif 0 >= float(unit_mark) or 100 <= float(unit_mark):
+                print(f"\nAre you sure you got {unit_mark}/100? \nMaybe try entering that again.\n")                
             else:
                 print("\nInvalid format.\n")
-
+        else:
+            print("\nInvalid format.\n")
+      
 server_timer_start = time.time()
 # # Look up server-1 in the name server
 nameserver = Pyro4.locateNS()
@@ -169,18 +166,8 @@ while True:
     elif(firstQuestion.lower() == "n" or firstQuestion.lower() == "no"):
         print("Welcome, Guest!")
         current_user = guest()
+        print(server1.evaluateEligibility(current_user).value if current_user is not None else ":(")
+
         break
     else:
         print("Please answer yes or no.")
-
-
-
-# user_details1 = current_user  #E.g. ('8914352', 'John', 'Doe', 'john.doe@gmail.com')
-
-# #start_time1 = time.time()
-# print(server1.evaluateEligibility(user_details1))
-# #end_time1 = time.time()
-# #print(f"Elapsed time for first call -> {end_time1 - start_time1} seconds\n")
-
-# (print("\nPress Enter to exit..."))
-# input()

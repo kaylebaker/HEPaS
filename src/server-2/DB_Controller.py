@@ -75,52 +75,6 @@ class Server2(object):
 
         return student_unit_list
 
-    # ---------------------------------------------
-    # FUNCTIONS BELOW ARE CALLED BY db_interface.py
-    # ---------------------------------------------
-
-    @Pyro4.expose
-    def getDBSchema(self):
-
-        # Establish connection to SQLite database and create cursor object to perform SQL operations
-        conn = sqlite3.connect(self.DB_DIR)
-        cur = conn.cursor()
-
-        table_schemas = {}
-
-        # Iterate through table names and collect schema of each table and store in dict
-        for table in self.TABLE_NAMES:
-            schema_info = cur.execute(f"PRAGMA table_info({table})").fetchall()
-            table_columns = []
-            
-            for column in schema_info:
-                    table_columns.append(f"Column: {column[1]}, Type: {column[2]}, Nullable: {column[3]}, Default: {column[4]}")
-            
-            table_schemas[table] = table_columns
-
-        # Close connection to SQL database
-        cur.close()
-
-        return table_schemas
-
-
-    @Pyro4.expose
-    def displayStudentRecords(self):
-
-        # Establish connection to SQLite database and create cursor object to perform SQL operations
-        conn = sqlite3.connect(self.DB_DIR)
-        cur = conn.cursor()
-
-        data = []
-        for record in cur.execute('SELECT * FROM Students'):
-            row_data = [record[0], record[1], record[2], record[3], record[4], record[5], record[6], record[7], record[8]]
-            data.append(row_data)
-
-        # Close connection to SQL database
-        cur.close()
-
-        return data
-
 def main():
     Pyro4.Daemon.serveSimple(
         {
