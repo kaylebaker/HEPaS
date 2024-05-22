@@ -78,7 +78,7 @@ class Server1(object):
         self.person_id = user_details[0]
 
         print("Checking for validated user records...")
-        if self.user_records[0][0] == self.person_id:
+        if len(self.user_records) > 0:
             print("Validated user records found. Evaluating student records for eligibility.")
             try:
                 # Loop through user_records and collect required data
