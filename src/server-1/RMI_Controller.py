@@ -151,7 +151,6 @@ class Server1(object):
 
 # Daemon([host=None, port=0, unixsocket=None, nathost=None, natport=None, interface=DaemonObject, connected_socket=None])
 host_ip = "192.168.1.111"
-port = 9090
 
 def main():
     s1_daemon = Pyro4.Daemon(host=host_ip)

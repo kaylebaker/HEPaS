@@ -172,15 +172,3 @@ while True:
         break
     else:
         print("Please answer yes or no.")
-
-
-
-# user_details1 = current_user  #E.g. ('8914352', 'John', 'Doe', 'john.doe@gmail.com')
-
-# #start_time1 = time.time()
-# print(server1.evaluateEligibility(user_details1))
-# #end_time1 = time.time()
-# #print(f"Elapsed time for first call -> {end_time1 - start_time1} seconds\n")
-
-# (print("\nPress Enter to exit..."))
-# input()
