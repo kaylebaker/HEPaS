@@ -70,6 +70,10 @@ class Server1(object):
     @Pyro4.expose
     def evaluateEligibility(self, user_details):
         print("evaluateEligibility method called by client.")
+        self.numUnitsCompleted = 0
+        self.numOfFails = 0
+        self.course_avg = 0.0
+        self.topEight_avg = 0.0
 
         self.person_id = user_details[0]
 
