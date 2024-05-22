@@ -66,7 +66,6 @@ def student():
         print(f"Calculating eligibility for {ud[1]} {ud[2]}...\n")
         return(ud)
     else:
-        print(validation_result.value)
         return False
 
 # Example of non-student user_details
@@ -148,7 +147,7 @@ server_timer_start = time.time()
 nameserver = Pyro4.locateNS()
 uri = nameserver.lookup("server-1")
 
-# # Create a Proxy for server-2
+# # Create a Proxy for server-1
 server1 = Pyro4.Proxy(uri)
 server1._pyroAsync()
 
@@ -157,17 +156,18 @@ print(f"Connected to server-1. Time elapsed {server_timer_end - server_timer_sta
 
 current_user = []
 while True:
-    firstQuestion = input("Are you a former/current student interested in enrolling in an honors course?\n(y/n)\n\n")
-    if (firstQuestion.lower() == "y" or firstQuestion.lower() == "yes"):
+    firstQuestion = input("\nAre you a former/current student interested in enrolling in an honors course?\n(y/n)\n(Type 'q' or 'quit' to quit)\n")
+    if firstQuestion.lower() == 'q' or firstQuestion.lower() == 'quit':
+        print("Thank you for using this program.\nGoodbye!\n")
+        break
+    elif (firstQuestion.lower() == "y" or firstQuestion.lower() == "yes"):
         print("Welcome, Student!")
         current_user = student()
         print(server1.evaluateEligibility(current_user).value if current_user is not False else "Please try again with valid user credentials.")
-        break
+
     elif(firstQuestion.lower() == "n" or firstQuestion.lower() == "no"):
         print("Welcome, Guest!")
         current_user = guest()
         print(server1.evaluateEligibility(current_user).value if current_user is not None else ":(")
-
-        break
     else:
         print("Please answer yes or no.")
