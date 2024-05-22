@@ -7,6 +7,7 @@ import sqlite3
 import Pyro4
 import logging
 import time
+import pathlib
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
@@ -14,7 +15,8 @@ logging.basicConfig(level=logging.DEBUG)
 @Pyro4.behavior(instance_mode="single")
 class Server2(object):
     # Set constants
-    DB_DIR = "C:\\Users\\krbak\OneDrive\\Uni\\Year 3 Semester 1\\CSI3344 Distributed Systems\\Assignment 3\\Code\\HEPaS\\src\\server-2\\oust_database.db"
+    #DB_DIR = "C:\\Users\\krbak\OneDrive\\Uni\\Year 3 Semester 1\\CSI3344 Distributed Systems\\Assignment 3\\Code\\HEPaS\\src\\server-2\\oust_database.db"
+    DB_DIR = str(pathlib.Path(__file__).parent.resolve()) + "\\oust_database.db"
     VALIDATION_ERROR = "VALIDATION ERROR: Cannot authenticate user. Student record not found in database."
 
     # Function Purpose: 
