@@ -78,7 +78,7 @@ class Server1(object):
         self.person_id = user_details[0]
 
         print("Checking for validated user records...")
-        if len(self.user_records) > 0:
+        if user_details[0] != 'N':
             print("Validated user records found. Evaluating student records for eligibility.")
             try:
                 # Loop through user_records and collect required data
@@ -116,9 +116,10 @@ class Server1(object):
         # (user_id, {<course_code> : [result1, result2, ...], ...})
         else:
             print("No validated user records found. Evaluating eligibility based on unit scores input by user.")
+
             try:
-                self.person_id = user_details[0]
-                self.user_scores = user_details[1]
+                self.person_id = user_details[1]
+                self.user_scores = user_details[2]
                 self.numUnitsCompleted = len(self.user_scores)
 
                 unit_scores = []

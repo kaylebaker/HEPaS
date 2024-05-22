@@ -168,6 +168,7 @@ while True:
     elif(firstQuestion.lower() == "n" or firstQuestion.lower() == "no"):
         print("Welcome, Guest!")
         current_user = guest()
+        current_user.insert(0, 'N')
         print(server1.evaluateEligibility(current_user).value if current_user is not None else ":(")
     else:
         print("Please answer yes or no.")
